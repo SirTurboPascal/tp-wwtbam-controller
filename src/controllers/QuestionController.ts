@@ -91,6 +91,21 @@ class QuestionController {
 	}
 
 	/**
+	 * Locks in the final answer by adding a visual indicator to the corresponding answer panel.
+	 *
+	 * This method identifies the container element for the specified answer using its letter and adds
+	 * the CSS class `answer-panel__container--final` to visually indicate that the answer is locked in.
+	 *
+	 * @param answerLetter The letter of the answer to lock in
+	 */
+	public lockInFinalAnswer(answerLetter: AnswerLetterType): void {
+		const answerPanelContainerElement: HTMLElement = document.getElementById(`answerPanelContainer${answerLetter}`) as HTMLElement;
+
+		QuestionController.logger.info(`Locking in answer [${answerLetter}]...`);
+		answerPanelContainerElement.classList.add('answer-panel__container--final');
+	}
+
+	/**
 	 * Reveals the body section of specified answer panels.
 	 *
 	 * This method sets the `display` style of the body section for the given answer panels
@@ -139,6 +154,21 @@ class QuestionController {
 		});
 
 		return promise;
+	}
+
+	/**
+	 * Unlocks the final answer by removing the visual indicator from all answer panels.
+	 *
+	 * This method removes the CSS class `answer-panel__container--final` from all elements
+	 * with the class `answer-panel__container`, effectively resetting the state of all answers
+	 * to their default appearance.
+	 */
+	public unlockFinalAnswer(): void {
+		QuestionController.logger.info('Unlocking final answer...');
+
+		document.querySelectorAll('div.answer-panel__container').forEach((answerPanelContainerElement) => {
+			answerPanelContainerElement.classList.remove('answer-panel__container--final');
+		});
 	}
 }
 

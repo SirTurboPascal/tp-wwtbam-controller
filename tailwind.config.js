@@ -8,6 +8,7 @@ export default {
 		extend: {
 			backgroundImage: {
 				'answer-panel-background': "url('/images/answer-panel/answer-panel__background.webp')",
+				'answer-panel-background--final': "url('/images/answer-panel/answer-panel__background--final.webp')",
 				'answer-panel-border': "url('/images/answer-panel/answer-panel__border.webp')",
 				'answer-panel-row': "url('/images/answer-panel/answer-panel__row.webp')",
 				'question-panel-background': "url('/images/question-panel/question-panel__background.webp')",

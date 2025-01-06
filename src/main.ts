@@ -37,8 +37,39 @@ document.addEventListener('keydown', (event) => {
 			audioController.stopBackgroundSound();
 			questionController.hideQuestionAndAnswerPanels();
 			questionController.hideAnswerPanelBody('A', 'B', 'C', 'D');
+			questionController.unlockFinalAnswer();
 		}
 
 		counter = counter === 5 ? 0 : counter + 1;
+	}
+
+	if (event.key === '1') {
+		audioController.playFinalSound('final-answer-1').then(() => {
+			questionController.lockInFinalAnswer('A');
+		});
+	}
+
+	if (event.key === '2') {
+		audioController.playFinalSound('final-answer-1').then(() => {
+			questionController.lockInFinalAnswer('B');
+		});
+	}
+
+	if (event.key === '3') {
+		audioController.playFinalSound('final-answer-1').then(() => {
+			questionController.lockInFinalAnswer('C');
+		});
+	}
+
+	if (event.key === '4') {
+		audioController.playFinalSound('final-answer-1').then(() => {
+			questionController.lockInFinalAnswer('D');
+		});
+	}
+
+	if (event.key === 'u') {
+		audioController.playBedSound('q11-bed').then(() => {
+			questionController.unlockFinalAnswer();
+		});
 	}
 });

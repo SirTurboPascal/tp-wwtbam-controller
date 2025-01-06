@@ -2,7 +2,7 @@ import { Howl } from 'howler';
 import { isUndefined } from 'lodash';
 import { Logger } from 'tslog';
 
-import { BedAudioFileNameType } from '../types';
+import { BedAudioFileNameType, FinalAnswerAudioFileNameType } from '../types';
 
 /**
  * @author Theo Gernke
@@ -17,11 +17,15 @@ class AudioController {
 	/** {@link Record} of strings and {@link Howl}s */
 	private readonly bedSounds: Record<string, Howl>;
 
+	/** {@link Record} of strings and {@link Howl}s */
+	private readonly finalAnswerSounds: Record<string, Howl>;
+
 	/**
 	 * Creates a new instance of the {@link AudioController} class.
 	 */
 	public constructor() {
 		this.bedSounds = this.initializeBedSounds();
+		this.finalAnswerSounds = this.initializeFinalAnswerSounds();
 	}
 
 	/**
@@ -42,6 +46,33 @@ class AudioController {
 				this.backgroundSound = this.bedSounds[key];
 
 				AudioController.logger.info(`Now playing bed sound with key [${key}] as a background sound...`);
+				this.backgroundSound.play();
+
+				return resolve();
+			});
+		});
+
+		return promise;
+	}
+
+	/**
+	 * Plays a specified final answer sound as the background sound asynchronously.
+	 *
+	 * This method ensures that the audio context is resumed. After resuming the audio
+	 * context, it stops any currently playing background sound, sets the new background
+	 * sound based on the provided `key`, and starts playing it.
+	 *
+	 * @param key The key representing the final answer sound to play
+	 * @returns A promise that resolves once the audio context is resumed.
+	 */
+	public async playFinalSound(key: FinalAnswerAudioFileNameType): Promise<void> {
+		const promise: Promise<void> = new Promise((resolve) => {
+			this.resumeAudioContext().then(() => {
+				this.stopBackgroundSound();
+
+				this.backgroundSound = this.finalAnswerSounds[key];
+
+				AudioController.logger.info(`Now playing final answer sound with key [${key}] as a background sound...`);
 				this.backgroundSound.play();
 
 				return resolve();
@@ -80,6 +111,20 @@ class AudioController {
 		}
 
 		return bedSounds;
+	}
+
+	private initializeFinalAnswerSounds(): Record<FinalAnswerAudioFileNameType, Howl> {
+		const finalAnswerSounds: Record<string, Howl> = {};
+
+		for (let i: number = 0; i < 5; i++) {
+			const key: string = `final-answer-${i + 1}`;
+			const src: string = `/audio/final-answer/${key}.mp3`;
+
+			AudioController.logger.info(`Registering audio file [${src}] under key [${key}]...`);
+			finalAnswerSounds[key] = new Howl({ src, preload: true });
+		}
+
+		return finalAnswerSounds;
 	}
 
 	private async resumeAudioContext(): Promise<void> {

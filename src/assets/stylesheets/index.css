@@ -85,6 +85,14 @@
 		@apply bg-answer-panel-background;
 	}
 
+	.answer-panel__container--final .answer-panel__background {
+		@apply bg-answer-panel-background--final;
+	}
+
+	.answer-panel__container--final .answer-panel__letter {
+		@apply text-black;
+	}
+
 	.answer-panel__border {
 		@apply bg-answer-panel-border;
 	}
@@ -95,7 +103,7 @@
 
 	.answer-panel__letter,
 	.answer-panel__text {
-		@apply text-[38px];
+		@apply text-[38px] cursor-default select-none;
 	}
 
 	.answer-panel__letter {
