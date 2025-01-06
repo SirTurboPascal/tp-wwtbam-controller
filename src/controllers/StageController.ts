@@ -25,42 +25,10 @@ class StageController {
 	 * @param selector The CSS selector used to locate the container element where the currency signs will spawn
 	 */
 	public startSpawningCurrencySigns(currencySign: string, selector: string): void {
-		const currencySignSpawnerElement: HTMLElement | null = document.querySelector(selector);
-
-		if (isNull(currencySignSpawnerElement)) {
-			StageController.logger.error(`No element for selector [${selector}] was found!`);
-
-			return;
-		}
+		this.spawnCurrencySign(currencySign, selector);
 
 		this.interval = setInterval(() => {
-			const currencySignElement: HTMLElement = document.createElement('div');
-			currencySignElement.classList.add('absolute', 'top-0', 'opacity-0', 'text-brightblue', 'blur-sm', 'font-nunito', 'font-bold');
-			currencySignElement.textContent = currencySign;
-
-			const fontSize: number = Math.random() * 200;
-			currencySignElement.style.fontSize = `${fontSize}px`;
-
-			const x: number = Math.random() * currencySignSpawnerElement.offsetWidth;
-			const y: number = Math.random() * currencySignSpawnerElement.offsetHeight;
-
-			currencySignElement.style.top = `${y}px`;
-			currencySignElement.style.left = `${x}px`;
-
-			currencySignSpawnerElement.appendChild(currencySignElement);
-
-			anime({
-				targets: currencySignElement,
-				duration: 10000,
-				easing: 'linear',
-
-				opacity: [0, 0.5, 0],
-				translateY: fontSize * -2,
-
-				complete: () => {
-					currencySignElement.remove();
-				},
-			});
+			this.spawnCurrencySign(currencySign, selector);
 		}, 250);
 	}
 
@@ -74,6 +42,44 @@ class StageController {
 		StageController.logger.info('Stopping to spawn currency signs...');
 
 		clearInterval(this.interval);
+	}
+
+	private spawnCurrencySign(currencySign: string, selector: string): void {
+		const currencySignSpawnerElement: HTMLElement | null = document.querySelector(selector);
+
+		if (isNull(currencySignSpawnerElement)) {
+			StageController.logger.error(`No element for selector [${selector}] was found!`);
+
+			return;
+		}
+
+		const currencySignElement: HTMLElement = document.createElement('div');
+		currencySignElement.classList.add('absolute', 'top-0', 'opacity-0', 'text-brightblue', 'blur-sm', 'font-nunito', 'font-bold');
+		currencySignElement.textContent = currencySign;
+
+		const fontSize: number = Math.random() * 200;
+		currencySignElement.style.fontSize = `${fontSize}px`;
+
+		const x: number = Math.random() * currencySignSpawnerElement.offsetWidth;
+		const y: number = Math.random() * currencySignSpawnerElement.offsetHeight;
+
+		currencySignElement.style.top = `${y}px`;
+		currencySignElement.style.left = `${x}px`;
+
+		currencySignSpawnerElement.appendChild(currencySignElement);
+
+		anime({
+			targets: currencySignElement,
+			duration: 10000,
+			easing: 'linear',
+
+			opacity: [0, 0.5, 0],
+			translateY: fontSize * -2,
+
+			complete: () => {
+				currencySignElement.remove();
+			},
+		});
 	}
 }
 
