@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	@font-face {
+		font-family: 'Copperplate';
+		font-style: normal;
+		font-weight: 300;
+
+		src: url('/fonts/Copperplate/Copperplate-Light.ttf') format('truetype');
+	}
+
+	@font-face {
+		font-family: 'Copperplate';
+		font-style: normal;
+		font-weight: 400;
+
+		src: url('/fonts/Copperplate/Copperplate-Regular.ttf') format('truetype');
+	}
+
+	@font-face {
+		font-family: 'Copperplate';
+		font-style: normal;
+		font-weight: 600;
+
+		src: url('/fonts/Copperplate/Copperplate-Bold.ttf') format('truetype');
+	}
+
+	@font-face {
+		font-family: 'Nunito';
+		font-style: normal;
+		font-weight: 400;
+
+		src: url('/fonts/Nunito/Nunito-Regular.ttf') format('truetype');
+	}
+
+	@font-face {
+		font-family: 'Nunito';
+		font-style: normal;
+		font-weight: 600;
+
+		src: url('/fonts/Nunito/Nunito-Bold.ttf') format('truetype');
+	}
+
+	@font-face {
+		font-family: 'Verdana';
+		font-style: normal;
+		font-weight: 400;
+
+		src: url('/fonts/Verdana/Verdana-Regular.ttf') format('truetype');
+	}
+
+	@font-face {
+		font-family: 'Verdana';
+		font-style: normal;
+		font-weight: 600;
+
+		src: url('/fonts/Verdana/Verdana-Bold.ttf') format('truetype');
+	}
+}
