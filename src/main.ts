@@ -19,19 +19,22 @@ const question: IQuestion = {
 
 questionController.displayQuestion(question);
 questionController.hideAnswerPanelBody('A', 'B', 'C', 'D');
+questionController.hideQuestionAndAnswerPanels();
 
 let counter: number = 0;
 
 document.addEventListener('keydown', (event) => {
 	if (event.key === 'ArrowRight') {
-		if (counter < 4) {
+		if (counter === 0) {
+			questionController.revealQuestionAndAnswerPanels(700);
+		} else if (counter > 0 && counter < 5) {
 			const answerLetters: AnswerLetterType[] = ['A', 'B', 'C', 'D'];
-
-			questionController.revealAnswerPanelBody(answerLetters[counter++]);
-		} else if (counter === 4) {
+			questionController.revealAnswerPanelBody(answerLetters[counter - 1]);
+		} else if (counter === 5) {
+			questionController.hideQuestionAndAnswerPanels();
 			questionController.hideAnswerPanelBody('A', 'B', 'C', 'D');
-
-			counter = 0;
 		}
+
+		counter = counter === 5 ? 0 : counter + 1;
 	}
 });

@@ -1,8 +1,10 @@
+import anime, { AnimeParams, AnimeTimelineInstance } from 'animejs';
+
+import { eq } from 'lodash';
 import { Logger } from 'tslog';
 
-import IQuestion from '../interfaces/IQuestion';
-
-import AnswerLetterType from '../types/AnswerLetterType';
+import { IQuestion } from '../interfaces';
+import { AnswerLetterType } from '../types';
 
 /**
  * @author Theo Gernke
@@ -55,6 +57,40 @@ class QuestionController {
 	}
 
 	/**
+	 * Hides the question panel and answer panels with an optional animation.
+	 *
+	 * This method animates the question panel and the answer panels by scaling them up and
+	 * translating them downward. If the duration is set to `0`, the panels are instantly hidden
+	 * without animation.
+	 *
+	 * @param duration The duration of the animation in milliseconds. If `0`, no animation is applied
+	 * @returns A promise that resolves when the hiding animation is complete
+	 */
+	public async hideQuestionAndAnswerPanels(duration: number = 0): Promise<void> {
+		const promise: Promise<void> = new Promise((resolve) => {
+			const animeParams: AnimeParams = {
+				scale: 4,
+				translateY: 400,
+			};
+
+			if (eq(duration, 0)) {
+				anime.set(['div.question-panel', 'div.answer-panel'], animeParams);
+
+				return resolve();
+			}
+
+			const timeline: AnimeTimelineInstance = anime.timeline({ easing: 'easeInOutQuad', duration });
+			timeline.add({ targets: 'div.answer-panel--bottom', ...animeParams });
+			timeline.add({ targets: 'div.answer-panel--top', ...animeParams }, duration * 0.125);
+			timeline.add({ targets: 'div.question-panel', ...animeParams }, duration);
+
+			timeline.finished.then(() => resolve());
+		});
+
+		return promise;
+	}
+
+	/**
 	 * Reveals the body section of specified answer panels.
 	 *
 	 * This method sets the `display` style of the body section for the given answer panels
@@ -69,6 +105,40 @@ class QuestionController {
 			QuestionController.logger.info(`Revealing answer panel body for letter [${answerLetter}]...`);
 			answerPanelBodyElement.style.display = 'flex';
 		});
+	}
+
+	/**
+	 * Reveals the question panel and answer panels with an optional animation.
+	 *
+	 * This method animates the question panel and the answer panels by scaling them back
+	 * to their original size and moving them to their default positions.
+	 * If the duration is set to `0`, the panels are instantly revealed without animation.
+	 *
+	 * @param duration The duration of the animation in milliseconds. If `0`, no animation is applied
+	 * @returns A promise that resolves when the hiding animation is complete
+	 */
+	public async revealQuestionAndAnswerPanels(duration: number = 0): Promise<void> {
+		const promise: Promise<void> = new Promise((resolve) => {
+			const animeParams: AnimeParams = {
+				scale: 1,
+				translateY: 0,
+			};
+
+			if (eq(duration, 0)) {
+				anime.set(['div.question-panel', 'div.answer-panel'], animeParams);
+
+				return resolve();
+			}
+
+			const timeline: AnimeTimelineInstance = anime.timeline({ easing: 'easeInOutQuad', duration });
+			timeline.add({ targets: 'div.question-panel', ...animeParams });
+			timeline.add({ targets: 'div.answer-panel--top', ...animeParams }, duration * 0.875);
+			timeline.add({ targets: 'div.answer-panel--bottom', ...animeParams }, duration);
+
+			timeline.finished.then(() => resolve());
+		});
+
+		return promise;
 	}
 }
 
