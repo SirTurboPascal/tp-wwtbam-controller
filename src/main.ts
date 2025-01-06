@@ -1,9 +1,13 @@
 import './assets/stylesheets/index.css';
 
-import QuestionController from './controllers/QuestionController';
-import StageController from './controllers/StageController';
+import { QuestionController, StageController } from './controllers';
+import { IQuestion } from './interfaces';
+import { AnswerLetterType } from './types';
 
-import IQuestion from './interfaces/IQuestion';
+const questionController: QuestionController = new QuestionController();
+const stageController: StageController = new StageController();
+
+stageController.startSpawningCurrencySigns('$', 'div.currency-sign-spawner__container');
 
 const question: IQuestion = {
 	text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque sint eligendi consequatur?',
@@ -13,8 +17,21 @@ const question: IQuestion = {
 	}),
 };
 
-const questionController: QuestionController = new QuestionController();
 questionController.displayQuestion(question);
+questionController.hideAnswerPanelBody('A', 'B', 'C', 'D');
 
-const stageController: StageController = new StageController();
-stageController.startSpawningCurrencySigns('$', 'div.currency-sign-spawner__container');
+let counter: number = 0;
+
+document.addEventListener('keydown', (event) => {
+	if (event.key === 'ArrowRight') {
+		if (counter < 4) {
+			const answerLetters: AnswerLetterType[] = ['A', 'B', 'C', 'D'];
+
+			questionController.revealAnswerPanelBody(answerLetters[counter++]);
+		} else if (counter === 4) {
+			questionController.hideAnswerPanelBody('A', 'B', 'C', 'D');
+
+			counter = 0;
+		}
+	}
+});
