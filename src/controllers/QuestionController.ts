@@ -1,5 +1,6 @@
-import { isNull } from 'lodash';
 import { Logger } from 'tslog';
+
+import IQuestion from '../interfaces/IQuestion';
 
 /**
  * @author Theo Gernke
@@ -9,25 +10,27 @@ class QuestionController {
 	private static readonly logger: Logger<QuestionController> = new Logger();
 
 	/**
-	 * Updates the text content of a question panel element identified by a CSS selector.
+	 * Displays a question and its corresponding answers in the UI.
 	 *
-	 * This method locates a DOM element using the provided selector and updates its text content
-	 * to display the specified question panel text. If the element is not found, an error is logged.
+	 * This method updates the question text in the question panel and populates
+	 * the answer panels with the corresponding answers provided in the {@link IQuestion} object.
+	 * Each answer is displayed in its respective element based on its index.
 	 *
-	 * @param questionPanelText The text to be displayed in the question panel
-	 * @param selector The CSS selector used to locate the question panel element
+	 * @param question {@link IQuestion}
 	 */
-	public updateQuestionPanelText(questionPanelText: string, selector: string): void {
-		const questionPanelTextElement: HTMLElement | null = document.querySelector(selector);
+	public displayQuestion(question: IQuestion): void {
+		const { answers, text } = question;
 
-		if (isNull(questionPanelTextElement)) {
-			QuestionController.logger.error(`No element for selector [${selector}] was found!`);
+		const questionPanelTextElement: HTMLElement = document.querySelector('div.question-panel__text') as HTMLElement;
+		QuestionController.logger.info(`Updating question panel text to be [${text}]...`);
+		questionPanelTextElement.textContent = text;
 
-			return;
-		}
+		document.querySelectorAll('div.answer-panel__text').forEach((answerPanelTextElement, i) => {
+			const { text } = answers[i];
 
-		QuestionController.logger.info(`Updating question panel text to be [${questionPanelText}]...`);
-		questionPanelTextElement.textContent = questionPanelText;
+			QuestionController.logger.info(`Updating answer panel text with index [${i}] to be [${text}]`);
+			answerPanelTextElement.textContent = text;
+		});
 	}
 }
 

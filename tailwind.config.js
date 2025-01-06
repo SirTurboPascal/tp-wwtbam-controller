@@ -7,6 +7,9 @@ export default {
 	theme: {
 		extend: {
 			backgroundImage: {
+				'answer-panel-background': "url('/images/answer-panel/answer-panel__background.webp')",
+				'answer-panel-border': "url('/images/answer-panel/answer-panel__border.webp')",
+				'answer-panel-row': "url('/images/answer-panel/answer-panel__row.webp')",
 				'question-panel-background': "url('/images/question-panel/question-panel__background.webp')",
 				'question-panel-border': "url('/images/question-panel/question-panel__border.webp')",
 				'question-panel-row': "url('/images/question-panel/question-panel__row.webp')",
@@ -16,6 +19,7 @@ export default {
 				black: '#000000',
 				blue: '#060640',
 				brightblue: '#0c036e',
+				orange: '#d89f4d',
 				white: '#effeff',
 			},
 
