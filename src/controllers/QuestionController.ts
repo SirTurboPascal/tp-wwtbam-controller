@@ -8,6 +8,15 @@ import { Logger } from 'tslog';
 class QuestionController {
 	private static readonly logger: Logger<QuestionController> = new Logger();
 
+	/**
+	 * Updates the text content of a question panel element identified by a CSS selector.
+	 *
+	 * This method locates a DOM element using the provided selector and updates its text content
+	 * to display the specified question panel text. If the element is not found, an error is logged.
+	 *
+	 * @param questionPanelText The text to be displayed in the question panel
+	 * @param selector The CSS selector used to locate the question panel element
+	 */
 	public updateQuestionPanelText(questionPanelText: string, selector: string): void {
 		const questionPanelTextElement: HTMLElement | null = document.querySelector(selector);
 
