@@ -44,18 +44,28 @@
 	}
 
 	@font-face {
-		font-family: 'Verdana';
+		font-family: 'Conduit';
 		font-style: normal;
 		font-weight: 400;
 
-		src: url('/fonts/Verdana/Verdana-Regular.ttf') format('truetype');
+		src: url('/fonts/Conduit/Conduit-Regular.ttf') format('truetype');
 	}
 
 	@font-face {
-		font-family: 'Verdana';
+		font-family: 'Conduit';
 		font-style: normal;
 		font-weight: 600;
 
-		src: url('/fonts/Verdana/Verdana-Bold.ttf') format('truetype');
+		src: url('/fonts/Conduit/Conduit-Bold.ttf') format('truetype');
+	}
+}
+
+@layer components {
+	.background-image {
+		@apply absolute top-0 right-0 bottom-0 left-0 bg-center bg-cover bg-no-repeat;
+	}
+
+	.question-panel__row {
+		@apply grow h-[4px] bg-center bg-contain bg-question-panel-row bg-repeat-x;
 	}
 }

@@ -7,14 +7,29 @@
 		<title>WWTBAM-Controller</title>
 	</head>
 
-	<body class="antialiased font-verdana">
+	<body class="antialiased font-conduit">
 		<div class="stage overflow-hidden">
 			<div class="stage__container flex flex-col relative h-screen">
 				<div class="stage__background absolute top-0 right-0 bottom-0 left-0 bg-gradient-to-b from-black to-blue"></div>
 
-				<div class="stage__body grow relative">
-					<div class="currency-sign-spawner flex flex-col absolute top-0 right-0 bottom-0 left-0">
-						<div class="currency-sign-spawner__container grow relative cursor-default select-none"></div>
+				<div class="currency-sign-spawner flex flex-col absolute top-0 right-0 bottom-0 left-0">
+					<div class="currency-sign-spawner__container grow relative cursor-default select-none"></div>
+				</div>
+
+				<div class="stage__body grow relative bg-bottom bg-cover bg-stage bg-no-repeat">
+					<div class="question-panel flex flex-row items-center absolute right-0 bottom-[268px] left-0">
+						<div class="question-panel__row"></div>
+
+						<div class="question-panel__container flex flex-row shrink-0 items-center relative w-[1414px] h-[112px]">
+							<div class="question-panel__background background-image bg-question-panel-background"></div>
+							<div class="question-panel__border background-image bg-question-panel-border"></div>
+
+							<div class="question-panel__body flex flex-row grow items-center relative px-[56px] cursor-default select-none">
+								<div class="question-panel__text grow text-white text-[36px] text-center leading-[42px]"></div>
+							</div>
+						</div>
+
+						<div class="question-panel__row"></div>
 					</div>
 				</div>
 			</div>
