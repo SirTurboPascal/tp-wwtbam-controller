@@ -25,21 +25,30 @@ class AudioController {
 	}
 
 	/**
-	 * Plays a specified bed sound as the background sound.
+	 * Plays a specified bed sound as the background sound asynchronously.
 	 *
-	 * This method stops any currently playing background sound, sets the new background sound based
-	 * on the provided `key`, and starts playing it. The available sounds are mapped to the keys
-	 * defined in `BedAudioFileNameType`.
+	 * This method ensures that the audio context is resumed. After resuming the audio
+	 * context, it stops any currently playing background sound, sets the new background
+	 * sound based on the provided `key`, and starts playing it.
 	 *
 	 * @param key The key representing the bed sound to play
+	 * @returns A promise that resolves once the audio context is resumed.
 	 */
-	public playBedSound(key: BedAudioFileNameType): void {
-		this.stopBackgroundSound();
+	public async playBedSound(key: BedAudioFileNameType): Promise<void> {
+		const promise: Promise<void> = new Promise((resolve) => {
+			this.resumeAudioContext().then(() => {
+				this.stopBackgroundSound();
 
-		this.backgroundSound = this.bedSounds[key];
+				this.backgroundSound = this.bedSounds[key];
 
-		AudioController.logger.info(`Now playing bed sound with key [${key}] as a background sound...`);
-		this.backgroundSound.play();
+				AudioController.logger.info(`Now playing bed sound with key [${key}] as a background sound...`);
+				this.backgroundSound.play();
+
+				return resolve();
+			});
+		});
+
+		return promise;
 	}
 
 	/**
@@ -67,10 +76,24 @@ class AudioController {
 			const src: string = `/audio/bed/${key}.mp3`;
 
 			AudioController.logger.info(`Registering audio file [${src}] under key [${key}]...`);
-			bedSounds[key] = new Howl({ src });
+			bedSounds[key] = new Howl({ src, preload: true });
 		}
 
 		return bedSounds;
+	}
+
+	private async resumeAudioContext(): Promise<void> {
+		const promise: Promise<void> = new Promise((resolve) => {
+			const audioContextState: AudioContextState = Howler.ctx.state;
+
+			if (audioContextState === 'running') {
+				return resolve();
+			}
+
+			Howler.ctx.resume().then(() => resolve());
+		});
+
+		return promise;
 	}
 }
 

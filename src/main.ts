@@ -27,8 +27,9 @@ let counter: number = 0;
 document.addEventListener('keydown', (event) => {
 	if (event.key === 'ArrowRight') {
 		if (counter === 0) {
-			audioController.playBedSound('q11-bed');
-			questionController.revealQuestionAndAnswerPanels(700);
+			audioController.playBedSound('q11-bed').then(() => {
+				questionController.revealQuestionAndAnswerPanels(700);
+			});
 		} else if (counter > 0 && counter < 5) {
 			const answerLetters: AnswerLetterType[] = ['A', 'B', 'C', 'D'];
 			questionController.revealAnswerPanelBody(answerLetters[counter - 1]);
