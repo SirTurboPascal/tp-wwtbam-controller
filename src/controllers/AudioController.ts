@@ -53,6 +53,21 @@ class AudioController {
 		return promise;
 	}
 
+	public async playExplainTheKnockoutGameSound(): Promise<void> {
+		const promise: Promise<void> = new Promise((resolve) => {
+			this.resumeAudioContext().then(() => {
+				this.backgroundSound = new Howl({ src: '/audio/common/explain-the-knockout-game.mp3', preload: true });
+
+				AudioController.logger.info('Now playing the explain the knockout game sound as background sound...');
+				this.backgroundSound.play();
+
+				return resolve();
+			});
+		});
+
+		return promise;
+	}
+
 	/**
 	 * Plays a specified final answer sound as the background sound asynchronously.
 	 *
