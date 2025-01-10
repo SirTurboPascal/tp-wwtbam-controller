@@ -1,6 +1,6 @@
 import anime, { AnimeParams, AnimeTimelineInstance } from 'animejs';
 
-import { eq } from 'lodash';
+import { isUndefined } from 'lodash';
 import { Logger } from 'tslog';
 
 import { IQuestion } from '../interfaces';
@@ -12,6 +12,21 @@ import { AnswerLetterType } from '../types';
  */
 class QuestionController {
 	private static readonly logger: Logger<QuestionController> = new Logger();
+
+	private _animationInProgress: boolean;
+	private _questionAndAnswerPanelsVisible: boolean;
+
+	private _finalAnswerLetter: AnswerLetterType | undefined;
+
+	/**
+	 * Creates a new instance of the {@link QuestionController} class.
+	 */
+	public constructor() {
+		QuestionController.logger.info('Initializing QuestionController...');
+
+		this._animationInProgress = false;
+		this._questionAndAnswerPanelsVisible = true;
+	}
 
 	/**
 	 * Displays a question and its corresponding answers in the UI.
@@ -40,135 +55,104 @@ class QuestionController {
 	}
 
 	/**
-	 * Hides the body section of specified answer panels.
+	 * Sets the visibility of the body section of specified answer panels.
 	 *
-	 * This method sets the `display` style of the body section for the given answer panels
-	 * to `none`, effectively hiding them from view. The panels are identified by their corresponding letters.
+	 * This method iterates through the provided answer letters and either reveals or hides
+	 * the body of the corresponding answer panel, depending on the `visible` parameter.
 	 *
-	 * @param answerLetters List of {@link AnswerLetterType}s
+	 * @param visible Determines whether the answer panel bodies should be visible. Defaults to `true`.
+	 * @param answerLetters A list of answer letters representing the panels to update.
 	 */
-	public hideAnswerPanelBody(...answerLetters: AnswerLetterType[]): void {
+	public setAnswerPanelBodyVisibility(visible: boolean = true, ...answerLetters: AnswerLetterType[]): void {
 		answerLetters.forEach((answerLetter) => {
 			const answerPanelBodyElement: HTMLElement = document.querySelector(`div#answerPanelContainer${answerLetter} div.answer-panel__body`) as HTMLElement;
 
-			QuestionController.logger.info(`Hiding answer panel body for letter [${answerLetter}]...`);
-			answerPanelBodyElement.style.display = 'none';
+			QuestionController.logger.info(`${visible ? 'Revealing' : 'Hiding'} answer panel body for letter [${answerLetter}]...`);
+			answerPanelBodyElement.style.display = visible ? 'flex' : 'none';
 		});
 	}
 
 	/**
-	 * Hides the question panel and answer panels with an optional animation.
+	 * Sets or clears the final answer for a question.
 	 *
-	 * This method animates the question panel and the answer panels by scaling them up and
-	 * translating them downward. If the duration is set to `0`, the panels are instantly hidden
-	 * without animation.
+	 * If an `answerLetter` is provided, this method locks in the specified answer by adding a visual
+	 * indicator (`answer-panel__container--final`) to the corresponding answer panel and stores the
+	 * answer as the final choice. If `undefined` is passed, it removes the visual indicator from all
+	 * answer panels and clears the final answer.
 	 *
-	 * @param duration The duration of the animation in milliseconds. If `0`, no animation is applied
-	 * @returns A promise that resolves when the hiding animation is complete
+	 * @param answerLetter The letter of the answer to lock in or `undefined` to unlock the final answer.
 	 */
-	public async hideQuestionAndAnswerPanels(duration: number = 0): Promise<void> {
-		const promise: Promise<void> = new Promise((resolve) => {
-			const animeParams: AnimeParams = {
-				scale: 4,
-				translateY: 400,
-			};
+	public setFinalAnswer(answerLetter: AnswerLetterType | undefined): void {
+		if (!isUndefined(answerLetter)) {
+			const answerPanelContainerElement: HTMLElement = document.getElementById(`answerPanelContainer${answerLetter}`) as HTMLElement;
 
-			if (eq(duration, 0)) {
-				anime.set(['div.question-panel', 'div.answer-panel'], animeParams);
+			QuestionController.logger.info(`Locking in answer [${answerLetter}]...`);
+			answerPanelContainerElement.classList.add('answer-panel__container--final');
+			this._finalAnswerLetter = answerLetter;
 
-				return resolve();
-			}
+			return;
+		}
 
-			const timeline: AnimeTimelineInstance = anime.timeline({ easing: 'easeInOutQuad', duration });
-			timeline.add({ targets: 'div.answer-panel--bottom', ...animeParams });
-			timeline.add({ targets: 'div.answer-panel--top', ...animeParams }, duration * 0.125);
-			timeline.add({ targets: 'div.question-panel', ...animeParams }, duration);
-
-			timeline.finished.then(() => resolve());
-		});
-
-		return promise;
-	}
-
-	/**
-	 * Locks in the final answer by adding a visual indicator to the corresponding answer panel.
-	 *
-	 * This method identifies the container element for the specified answer using its letter and adds
-	 * the CSS class `answer-panel__container--final` to visually indicate that the answer is locked in.
-	 *
-	 * @param answerLetter The letter of the answer to lock in
-	 */
-	public lockInFinalAnswer(answerLetter: AnswerLetterType): void {
-		const answerPanelContainerElement: HTMLElement = document.getElementById(`answerPanelContainer${answerLetter}`) as HTMLElement;
-
-		QuestionController.logger.info(`Locking in answer [${answerLetter}]...`);
-		answerPanelContainerElement.classList.add('answer-panel__container--final');
-	}
-
-	/**
-	 * Reveals the body section of specified answer panels.
-	 *
-	 * This method sets the `display` style of the body section for the given answer panels
-	 * to `'flex'`, making them visible. The panels are identified by their corresponding letters.
-	 *
-	 * @param answerLetters List of {@link AnswerLetterType}s
-	 */
-	public revealAnswerPanelBody(...answerLetters: AnswerLetterType[]): void {
-		answerLetters.forEach((answerLetter) => {
-			const answerPanelBodyElement: HTMLElement = document.querySelector(`div#answerPanelContainer${answerLetter} div.answer-panel__body`) as HTMLElement;
-
-			QuestionController.logger.info(`Revealing answer panel body for letter [${answerLetter}]...`);
-			answerPanelBodyElement.style.display = 'flex';
-		});
-	}
-
-	/**
-	 * Reveals the question panel and answer panels with an optional animation.
-	 *
-	 * This method animates the question panel and the answer panels by scaling them back
-	 * to their original size and moving them to their default positions.
-	 * If the duration is set to `0`, the panels are instantly revealed without animation.
-	 *
-	 * @param duration The duration of the animation in milliseconds. If `0`, no animation is applied
-	 * @returns A promise that resolves when the hiding animation is complete
-	 */
-	public async revealQuestionAndAnswerPanels(duration: number = 0): Promise<void> {
-		const promise: Promise<void> = new Promise((resolve) => {
-			const animeParams: AnimeParams = {
-				scale: 1,
-				translateY: 0,
-			};
-
-			if (eq(duration, 0)) {
-				anime.set(['div.question-panel', 'div.answer-panel'], animeParams);
-
-				return resolve();
-			}
-
-			const timeline: AnimeTimelineInstance = anime.timeline({ easing: 'easeInOutQuad', duration });
-			timeline.add({ targets: 'div.question-panel', ...animeParams });
-			timeline.add({ targets: 'div.answer-panel--top', ...animeParams }, duration * 0.875);
-			timeline.add({ targets: 'div.answer-panel--bottom', ...animeParams }, duration);
-
-			timeline.finished.then(() => resolve());
-		});
-
-		return promise;
-	}
-
-	/**
-	 * Unlocks the final answer by removing the visual indicator from all answer panels.
-	 *
-	 * This method removes the CSS class `answer-panel__container--final` from all elements
-	 * with the class `answer-panel__container`, effectively resetting the state of all answers
-	 * to their default appearance.
-	 */
-	public unlockFinalAnswer(): void {
-		QuestionController.logger.info('Unlocking final answer...');
-
+		QuestionController.logger.info('Unlocking final asnwer...');
 		document.querySelectorAll('div.answer-panel__container').forEach((answerPanelContainerElement) => {
 			answerPanelContainerElement.classList.remove('answer-panel__container--final');
 		});
+
+		this._finalAnswerLetter = undefined;
+	}
+
+	/**
+	 * Toggles the visibility of the question and answer panels with an optional animation.
+	 *
+	 * This method animates the scaling and position of the question and answer panels to either reveal
+	 * or hide them, depending on the `visible` parameter. The animation duration can be customized.
+	 * If another animation is already in progress, the method rejects the operation.
+	 *
+	 * @param visible Determines whether the panels should be visible. Defaults to `true`.
+	 * @param duration The duration of the animation in milliseconds. Defaults to `0` for an instant change.
+	 * @returns A promise that resolves when the animation is complete or rejects if another animation is in progress.
+	 */
+	public async setQuestionAndAnswerPanelVisibility(visible: boolean = true, duration: number = 0): Promise<void> {
+		const promise: Promise<void> = new Promise((resolve, reject) => {
+			if (this._animationInProgress) {
+				const error: Error = new Error('Animation already in progress!');
+
+				this._animationInProgress = false;
+				this._questionAndAnswerPanelsVisible = visible;
+
+				return reject(error);
+			}
+
+			this._animationInProgress = true;
+			QuestionController.logger.info(`${visible ? 'Revealing' : 'Hiding'} the question and answer panels in an [${duration}ms] animation...`);
+
+			const animeParams: AnimeParams = {
+				scale: visible ? 1 : 4,
+				translateY: visible ? 0 : 400,
+			};
+
+			const timeline: AnimeTimelineInstance = anime.timeline({ duration, easing: 'easeInOutQuint' });
+			timeline.add({ targets: 'div.question-panel', ...animeParams }, visible ? 0 : duration);
+			timeline.add({ targets: 'div.answer-panel--top', ...animeParams }, duration * (1 - (visible ? 0.125 : 0.875)));
+			timeline.add({ targets: 'div.answer-panel--bottom', ...animeParams }, visible ? duration : 0);
+
+			timeline.finished.then(() => {
+				this._animationInProgress = false;
+				this._questionAndAnswerPanelsVisible = visible;
+
+				return resolve();
+			});
+		});
+
+		return promise;
+	}
+
+	public get finalAnswerLetter(): AnswerLetterType | undefined {
+		return this._finalAnswerLetter;
+	}
+
+	public get questionAndAnswerPanelsVisible(): boolean {
+		return this._questionAndAnswerPanelsVisible;
 	}
 }
 

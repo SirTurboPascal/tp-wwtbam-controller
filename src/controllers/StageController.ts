@@ -10,7 +10,6 @@ import { Logger } from 'tslog';
 class StageController {
 	private static readonly logger: Logger<StageController> = new Logger();
 
-	/** Currency sign spawning interval */
 	private interval: number | undefined;
 
 	/**

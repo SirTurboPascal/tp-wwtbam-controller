@@ -11,19 +11,17 @@ import { BedAudioFileNameType, FinalAnswerAudioFileNameType } from '../types';
 class AudioController {
 	private static readonly logger: Logger<AudioController> = new Logger();
 
-	/** {@link Howl} or `undefined` */
 	private backgroundSound: Howl | undefined;
 
-	/** {@link Record} of strings and {@link Howl}s */
 	private readonly bedSounds: Record<string, Howl>;
-
-	/** {@link Record} of strings and {@link Howl}s */
 	private readonly finalAnswerSounds: Record<string, Howl>;
 
 	/**
 	 * Creates a new instance of the {@link AudioController} class.
 	 */
 	public constructor() {
+		AudioController.logger.info('Initializing AudioController...');
+
 		this.bedSounds = this.initializeBedSounds();
 		this.finalAnswerSounds = this.initializeFinalAnswerSounds();
 	}
