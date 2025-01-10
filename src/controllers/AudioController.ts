@@ -2,7 +2,7 @@ import { Howl } from 'howler';
 import { isUndefined } from 'lodash';
 import { Logger } from 'tslog';
 
-import { BedAudioFileNameType, FinalAnswerAudioFileNameType } from '../types';
+import { BedAudioFileNameType, FinalAnswerAudioFileNameType, LightsDownAudioFileNameType } from '../types';
 
 /**
  * @author Theo Gernke
@@ -11,10 +11,11 @@ import { BedAudioFileNameType, FinalAnswerAudioFileNameType } from '../types';
 class AudioController {
 	private static readonly logger: Logger<AudioController> = new Logger();
 
-	private backgroundSound: Howl | undefined;
+	private _backgroundSound: Howl | undefined;
 
-	private readonly bedSounds: Record<string, Howl>;
-	private readonly finalAnswerSounds: Record<string, Howl>;
+	private readonly _bedSounds: Record<string, Howl>;
+	private readonly _finalAnswerSounds: Record<string, Howl>;
+	private readonly _lightsDownSounds: Record<string, Howl>;
 
 	/**
 	 * Creates a new instance of the {@link AudioController} class.
@@ -22,8 +23,9 @@ class AudioController {
 	public constructor() {
 		AudioController.logger.info('Initializing AudioController...');
 
-		this.bedSounds = this.initializeBedSounds();
-		this.finalAnswerSounds = this.initializeFinalAnswerSounds();
+		this._bedSounds = this.initializeBedSounds();
+		this._finalAnswerSounds = this.initializeFinalAnswerSounds();
+		this._lightsDownSounds = this.initializeLightsDownSounds();
 	}
 
 	/**
@@ -41,10 +43,10 @@ class AudioController {
 			this.resumeAudioContext().then(() => {
 				this.stopBackgroundSound();
 
-				this.backgroundSound = this.bedSounds[key];
+				this._backgroundSound = this._bedSounds[key];
 
 				AudioController.logger.info(`Now playing bed sound with key [${key}] as a background sound...`);
-				this.backgroundSound.play();
+				this._backgroundSound.play();
 
 				return resolve();
 			});
@@ -53,13 +55,22 @@ class AudioController {
 		return promise;
 	}
 
+	/**
+	 * Plays the "Explain the Knockout Game" background sound.
+	 *
+	 * This method initializes and plays an audio file explaining the knockout game. It ensures
+	 * the audio context is resumed before playback begins and uses the `Howl` library to
+	 * load and play the sound file.
+	 *
+	 * @returns A promise that resolves once the audio playback has started
+	 */
 	public async playExplainTheKnockoutGameSound(): Promise<void> {
 		const promise: Promise<void> = new Promise((resolve) => {
 			this.resumeAudioContext().then(() => {
-				this.backgroundSound = new Howl({ src: '/audio/common/explain-the-knockout-game.mp3', preload: true });
+				this._backgroundSound = new Howl({ src: '/audio/common/explain-the-knockout-game.mp3', preload: true });
 
 				AudioController.logger.info('Now playing the explain the knockout game sound as background sound...');
-				this.backgroundSound.play();
+				this._backgroundSound.play();
 
 				return resolve();
 			});
@@ -76,17 +87,65 @@ class AudioController {
 	 * sound based on the provided `key`, and starts playing it.
 	 *
 	 * @param key The key representing the final answer sound to play
-	 * @returns A promise that resolves once the audio context is resumed.
+	 * @returns A promise that resolves once the audio playback has started
 	 */
 	public async playFinalSound(key: FinalAnswerAudioFileNameType): Promise<void> {
 		const promise: Promise<void> = new Promise((resolve) => {
 			this.resumeAudioContext().then(() => {
 				this.stopBackgroundSound();
 
-				this.backgroundSound = this.finalAnswerSounds[key];
+				this._backgroundSound = this._finalAnswerSounds[key];
 
 				AudioController.logger.info(`Now playing final answer sound with key [${key}] as a background sound...`);
-				this.backgroundSound.play();
+				this._backgroundSound.play();
+
+				return resolve();
+			});
+		});
+
+		return promise;
+	}
+
+	/**
+	 * Plays a lights down background sound based on the specified key.
+	 *
+	 * This method stops any currently playing background sound, resumes the audio context,
+	 * and then plays the "Lights Down" sound associated with the provided key. The sound
+	 * is managed using the `_lightsDownSounds` mapping.
+	 *
+	 * @param key The key representing the final answer sound to play
+	 * @returns A promise that resolves once the audio playback has started
+	 */
+	public async playLightsDownSound(key: LightsDownAudioFileNameType): Promise<void> {
+		const promise: Promise<void> = new Promise((resolve) => {
+			this.resumeAudioContext().then(() => {
+				this.stopBackgroundSound();
+
+				this._backgroundSound = this._lightsDownSounds[key];
+
+				AudioController.logger.info(`Now playing lights down sound with key [${key}] as a background sound...`);
+				this._backgroundSound.play();
+
+				return resolve();
+			});
+		});
+
+		return promise;
+	}
+
+	/**
+	 * Plays a sound from the specified source file.
+	 *
+	 * This method resumes the audio context before initializing and playing the sound using the `Howl` library.
+	 * The provided source (`src`) is preloaded for smoother playback.
+	 *
+	 * @param src The file path or URL of the audio file to be played
+	 * @returns A promise that resolves once the sound playback has started
+	 */
+	public async playSound(src: string): Promise<void> {
+		const promise: Promise<void> = new Promise((resolve) => {
+			this.resumeAudioContext().then(() => {
+				new Howl({ src, preload: true }).play();
 
 				return resolve();
 			});
@@ -103,13 +162,13 @@ class AudioController {
 	 * releasing the sound instance.
 	 */
 	public stopBackgroundSound(): void {
-		if (!isUndefined(this.backgroundSound)) {
+		if (!isUndefined(this._backgroundSound)) {
 			AudioController.logger.info('Stopping the currently playing background sound...');
 
-			this.backgroundSound.stop();
+			this._backgroundSound.stop();
 		}
 
-		this.backgroundSound = undefined;
+		this._backgroundSound = undefined;
 	}
 
 	private initializeBedSounds(): Record<BedAudioFileNameType, Howl> {
@@ -138,6 +197,20 @@ class AudioController {
 		}
 
 		return finalAnswerSounds;
+	}
+
+	private initializeLightsDownSounds(): Record<LightsDownAudioFileNameType, Howl> {
+		const lightsDownSounds: Record<string, Howl> = {};
+
+		for (let i: number = 0; i < 5; i++) {
+			const key: string = `lights-down-${i + 1}`;
+			const src: string = `/audio/lights-down/${key}.mp3`;
+
+			AudioController.logger.info(`Registering audio file [${src}] under key [${key}]...`);
+			lightsDownSounds[key] = new Howl({ src, preload: true });
+		}
+
+		return lightsDownSounds;
 	}
 
 	private async resumeAudioContext(): Promise<void> {

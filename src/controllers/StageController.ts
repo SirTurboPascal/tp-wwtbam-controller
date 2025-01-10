@@ -10,7 +10,7 @@ import { Logger } from 'tslog';
 class StageController {
 	private static readonly logger: Logger<StageController> = new Logger();
 
-	private interval: number | undefined;
+	private _interval: number | undefined;
 
 	/**
 	 * Starts spawning animated currency sign elements within a specified container element.
@@ -26,7 +26,7 @@ class StageController {
 	public startSpawningCurrencySigns(currencySign: string, selector: string): void {
 		this.spawnCurrencySign(currencySign, selector);
 
-		this.interval = setInterval(() => {
+		this._interval = setInterval(() => {
 			this.spawnCurrencySign(currencySign, selector);
 		}, 250);
 	}
@@ -40,7 +40,7 @@ class StageController {
 	public stopSpawningCurrencySigns(): void {
 		StageController.logger.info('Stopping to spawn currency signs...');
 
-		clearInterval(this.interval);
+		clearInterval(this._interval);
 	}
 
 	private spawnCurrencySign(currencySign: string, selector: string): void {
