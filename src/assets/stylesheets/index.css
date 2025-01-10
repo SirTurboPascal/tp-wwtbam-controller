@@ -107,11 +107,23 @@
 	}
 
 	.answer-panel__letter {
-		@apply shrink-0 w-[58px] mr-[16px] text-orange text-right;
+		@apply shrink-0 w-[46px] mr-[16px] text-orange text-right;
 	}
 
 	.answer-panel__text {
 		@apply grow overflow-hidden text-white text-nowrap tracking-[-0.8px];
+	}
+
+	.crystal-panel {
+		@apply shrink-0;
+	}
+
+	.crystal-panel__container {
+		@apply relative w-[12px] h-[8px];
+	}
+
+	.crystal-panel__background {
+		@apply bg-crystal-panel-background;
 	}
 
 	.game-level__container {

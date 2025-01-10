@@ -11,6 +11,7 @@ export default {
 				'answer-panel-background--final': "url('/images/answer-panel/answer-panel__background--final.webp')",
 				'answer-panel-border': "url('/images/answer-panel/answer-panel__border.webp')",
 				'answer-panel-row': "url('/images/answer-panel/answer-panel__row.webp')",
+				'crystal-panel-background': "url('/images/crystal-panel/crystal-panel__background.webp')",
 				'money-tree-panel-border': "url('/images/money-tree-panel/money-tree-panel__border.webp')",
 				'question-panel-background': "url('/images/question-panel/question-panel__background.webp')",
 				'question-panel-border': "url('/images/question-panel/question-panel__border.webp')",
