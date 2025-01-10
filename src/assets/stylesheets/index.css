@@ -113,4 +113,26 @@
 	.answer-panel__text {
 		@apply grow overflow-hidden text-white text-nowrap tracking-[-0.8px];
 	}
+
+	.game-level__container {
+		@apply flex flex-row shrink-0 items-center;
+	}
+
+	.game-level__amount,
+	.game-level__index {
+		@apply text-brightorange cursor-default select-none font-copperplate text-[30px];
+	}
+
+	.game-level--threshold .game-level__amount,
+	.game-level--threshold .game-level__index {
+		@apply text-white;
+	}
+
+	.game-level__amount {
+		@apply grow whitespace-nowrap tracking-[-1px];
+	}
+
+	.game-level__index {
+		@apply shrink-0 w-[47px] mr-[52px] text-right tracking-[-2.2px];
+	}
 }
